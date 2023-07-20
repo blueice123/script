@@ -102,4 +102,7 @@ SUBNET_ID=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/
 IPv4_ADDR=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/local-ipv4`
 ENI_ID=`aws ec2 describe-network-interfaces --filters Name=addresses.private-ip-address,Values=$IPv4_ADDR --query NetworkInterfaces[].NetworkInterfaceId --output text`
 ROUTE_ID=`aws ec2 describe-route-tables --filters Name=association.subnet-id,Values=$SUBNET_ID --query RouteTables[].RouteTableId --output text`
+
+## route table 경로 변경
+aws ec2 create-route --route-table-id $PRIVATE_SUB_RT_ID --destination-cidr-block 0.0.0.0/0 --network-interface-id $ENI_ID
 aws ec2 replace-route --route-table-id $PRIVATE_SUB_RT_ID --destination-cidr-block 0.0.0.0/0 --network-interface-id $ENI_ID
