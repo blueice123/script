@@ -15,7 +15,7 @@ sudo yum install iptables -y --downloadonly --downloaddir=/home/ec2-user/package
 sudo yum install cronie -y --downloadonly --downloaddir=/home/ec2-user/package/cronie/ && sudo rpm -Uvh /home/ec2-user/package/cronie/* && sudo systemctl enable crond && sudo systemctl start crond
 
 ### squid setup 
-sudo echo ".amazonaws.com
+sudo echo '.amazonaws.com
 .api.aws
 .cloudfront.net
 .aws.amazon.com
@@ -24,7 +24,7 @@ sudo echo ".amazonaws.com
 ap-northeast-2.console.aws.amazon.com
 ap-northeast-2.signin.aws.amazon.com
 .aws.dev
-.aws.a2z.com" > /etc/squid/whitelist.txt 
+.aws.a2z.com' > /etc/squid/whitelist.txt 
 
 sudo echo 'visible_hostname squid
 cache deny all 
