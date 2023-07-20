@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Terraform data에서 변수 받아서 S3 name 추출 
-S3Bucket=`echo $1`
-
 # File Backup
 sudo cp -rp /etc/ssh/sshd_config /etc/ssh/sshd_config_$TM
 sudo cp -rp /etc/pam.d/su /etc/pam.d/su_$TM
@@ -20,7 +17,7 @@ sudo timedatectl set-timezone Asia/Seoul
 ## User Add
 sudo groupadd --gid 1001 sysadm 
 sudo useradd --uid 1001 --gid 1001 sysadm 
-echo "sysadm:ShinsegaeEmart" | chpasswd
+echo "sysadm:Megazone123!" | chpasswd
 # nsap sysadm UID 1001 GID 1001
 # sap sysadm UID 1001 GID 100
 
