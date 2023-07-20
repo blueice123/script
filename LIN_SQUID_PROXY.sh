@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Terraform data에서 변수 받아서 S3 name 추출 
+S3Bucket=`echo $1`
+PRIVATE_SUB_RT_ID=`echo $2`
+
 ####### Application setup start ####
 sudo echo 1 > /proc/sys/net/ipv4/ip_forward
 
@@ -92,9 +96,10 @@ sudo /usr/sbin/squid -k parse && sudo /usr/sbin/squid -k reconfigure || (sudo cp
 echo "* * * * * root /etc/squid/squid-conf-refresh.sh
 0 0 * * * root /usr/sbin/squid -k rotate" >> /etc/crontab
 
-
 TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
-SUBNET_ID=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/network/interfaces/macs/02:29:96:8f:6a:2d/subnet-id`
-INSTANCE_ID=`TOKEN=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id`
-
-aws ec2 describe-network-interfaces --filters addresses.private-ip-address=
+MAC_ADDR=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/network/interfaces/macs`
+SUBNET_ID=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/network/interfaces/macs/$MAC_ADDR/subnet-id`
+IPv4_ADDR=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/local-ipv4`
+ENI_ID=`aws ec2 describe-network-interfaces --filters Name=addresses.private-ip-address,Values=$IPv4_ADDR --query NetworkInterfaces[].NetworkInterfaceId --output text`
+ROUTE_ID=`aws ec2 describe-route-tables --filters Name=association.subnet-id,Values=$SUBNET_ID --query RouteTables[].RouteTableId --output text`
+aws ec2 replace-route --route-table-id $PRIVATE_SUB_RT_ID --destination-cidr-block 0.0.0.0/0 --network-interface-id $ENI_ID
