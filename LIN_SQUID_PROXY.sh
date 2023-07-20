@@ -15,7 +15,7 @@ sudo yum install iptables -y --downloadonly --downloaddir=/home/ec2-user/package
 sudo yum install cronie -y --downloadonly --downloaddir=/home/ec2-user/package/cronie/ && sudo rpm -Uvh /home/ec2-user/package/cronie/* && sudo systemctl enable crond && sudo systemctl start crond
 
 ### squid setup 
-echo ".amazonaws.com
+sudo echo ".amazonaws.com
 .api.aws
 .cloudfront.net
 .aws.amazon.com
@@ -26,7 +26,7 @@ ap-northeast-2.signin.aws.amazon.com
 .aws.dev
 .aws.a2z.com" > /etc/squid/whitelist.txt 
 
-echo "visible_hostname squid
+sudo echo 'visible_hostname squid
 cache deny all 
 
 # Log format and rotation 
@@ -63,10 +63,10 @@ ssl_bump splice step3 allowed_https_sites
 ssl_bump terminate step2 all
 http_access allow allowed_https_sites
 
-http_access deny all" > /etc/squid/squid.conf
+http_access deny all' > /etc/squid/squid.conf
 
 ### iptables setup
-echo "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 3129
+sudo echo "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 3129
 sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 3130" > /etc/squid/iptables.sh && sudo chmod 755 /etc/squid/iptables.sh && sudo echo "@reboot root /etc/squid/iptables.sh">> /etc/crontab && sudo bash /etc/squid/iptables.sh
 
 
